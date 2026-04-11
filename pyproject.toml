@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autopublish"
+version = "0.1.0"
+description = "自动发布视频到B站和抖音"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "AutoPublish contributors" },
+]
+keywords = ["bilibili", "douyin", "video", "upload", "automation"]
+dependencies = [
+    "httpx>=0.24",
+    "playwright>=1.52",
+    "pyyaml>=6.0",
+    "qrcode[pil]>=7.4",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: Multimedia :: Video",
+]
+
+[project.scripts]
+autopublish = "autopublish.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["autopublish*"]

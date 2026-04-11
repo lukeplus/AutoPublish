@@ -1,0 +1,35 @@
+credentials_dir: ~/.autopublish/credentials
+
+bilibili:
+  # human_type2 表示投稿主区
+  # 1010 = 知识区
+  # 1026 = 健康
+  human_type2: 1010
+
+  # 默认标签
+  tags:
+    - 自动发布
+
+  # 1=自制, 2=转载
+  copyright: 1
+
+  # 上传分片并发数，网络不稳定时可调低
+  limit: 3
+
+  # 上传线路 (可选)
+  # 可选: bda2, qn, ws
+  # line: bda2
+
+douyin:
+  # 默认标签
+  tags:
+    - 自动发布
+
+  # 登录和上传时是否使用无头浏览器
+  headless: false
+
+  # 优先使用本机 Chrome；如果不可用，会回退到 Playwright Chromium
+  channel: chrome
+
+  # 页面操作超时时间，单位秒
+  timeout: 120

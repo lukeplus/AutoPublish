@@ -1,0 +1,32 @@
+tasks:
+  - platform: bilibili
+    video: /path/to/video1.mp4
+    title: "视频标题1"
+    description: "视频简介"
+    tags:
+      - 标签1
+      - 标签2
+    human_type2: 1010
+    cover: /path/to/cover1.jpg  # 可选
+    cover43: /path/to/cover43-1.jpg  # 可选，4:3 封面
+
+  - platform: bilibili
+    video: /path/to/video2.mp4
+    title: "视频标题2"
+    description: "另一个视频"
+    tags:
+      - 标签1
+    human_type2: 1026
+    season_id: 7642462
+    scheduled_time: 1700000000  # 10位时间戳，距提交需大于4小时
+    dynamic: "发布动态文案"
+
+  - platform: douyin
+    video: /path/to/douyin-video.mp4
+    title: "抖音视频标题"
+    description: "抖音视频简介"
+    tags:
+      - 自动发布
+      - 抖音
+    cover: /path/to/douyin-cover.jpg
+    scheduled_time: 1700000000  # 10位时间戳，距提交需大于2小时
