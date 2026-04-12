@@ -119,6 +119,8 @@ class DouyinPlatform:
             raise ValueError("视频标题不能为空")
         if video.cover_path:
             self._validate_image_file(video.cover_path)
+        if video.cover43_path:
+            self._validate_image_file(video.cover43_path)
 
         tags = video.tags or self.default_tags
         publish_time = self._parse_schedule_time(video.scheduled_time)
@@ -148,8 +150,12 @@ class DouyinPlatform:
                 await self._fill_title_description_tags(page, video.title, video.description, tags)
                 await self._wait_for_video_uploaded(page)
 
-                if video.cover_path:
-                    await self._set_cover(page, Path(video.cover_path).expanduser().resolve())
+                if video.cover_path or video.cover43_path:
+                    await self._set_covers(
+                        page,
+                        landscape_cover_path=self._resolve_optional_path(video.cover_path),
+                        portrait_cover_path=self._resolve_optional_path(video.cover43_path),
+                    )
 
                 if publish_time:
                     await self._set_schedule_time(page, publish_time)
@@ -292,18 +298,58 @@ class DouyinPlatform:
             await page.wait_for_timeout(3000)
         raise RuntimeError("等待抖音视频上传完成超时")
 
-    async def _set_cover(self, page, cover_path: Path) -> None:
+    async def _set_covers(
+        self,
+        page,
+        landscape_cover_path: Path | None = None,
+        portrait_cover_path: Path | None = None,
+    ) -> None:
         try:
-            await page.get_by_text("选择封面", exact=True).click(timeout=10000)
+            await page.get_by_text("选择封面", exact=True).first.click(timeout=10000)
             modal = page.locator('div[id*="creator-content-modal"]').first
             await modal.wait_for(state="visible", timeout=10000)
-            upload_input = modal.locator('input[type="file"]').first
-            await upload_input.set_input_files(str(cover_path))
-            await page.wait_for_timeout(2000)
+            upload_input = modal.locator(
+                'div[class^="semi-upload upload"] input.semi-upload-hidden-input'
+            ).first
+            if not await upload_input.count():
+                upload_input = modal.locator('input[type="file"]').first
+            await upload_input.wait_for(state="attached", timeout=10000)
+
+            if landscape_cover_path:
+                await self._select_cover_step(modal, 0)
+                await upload_input.set_input_files(str(landscape_cover_path))
+                await page.wait_for_timeout(2000)
+                print("横版封面设置完成")
+
+            if portrait_cover_path:
+                await self._select_cover_step(modal, 1)
+                await upload_input.set_input_files(str(portrait_cover_path))
+                await page.wait_for_timeout(2000)
+                print("竖版封面设置完成")
+
             await modal.locator('button:visible:has-text("完成")').click()
             print("封面设置完成")
         except Exception as exc:
             raise RuntimeError(f"设置抖音封面失败: {exc}") from exc
+
+    async def _select_cover_step(self, modal, index: int) -> None:
+        steps = modal.locator('div[class*="steps"] div')
+        step_count = await steps.count()
+        if step_count > index:
+            await steps.nth(index).click()
+            return
+        if index == 1:
+            labels = ["竖版封面", "主页封面", "封面二"]
+            for label in labels:
+                target = modal.get_by_text(label, exact=True).first
+                if await target.count():
+                    await target.click()
+                    return
+
+    def _resolve_optional_path(self, file_path: str | None) -> Path | None:
+        if not file_path:
+            return None
+        return Path(file_path).expanduser().resolve()
 
     async def _set_schedule_time(self, page, publish_time: datetime) -> None:
         await page.locator("[class^='radio']:has-text('定时发布')").click()

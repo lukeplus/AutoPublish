@@ -29,4 +29,5 @@ tasks:
       - 自动发布
       - 抖音
     cover: /path/to/douyin-cover.jpg
+    cover43: /path/to/douyin-portrait-cover.jpg  # 可选，抖音竖版封面
     scheduled_time: 1700000000  # 10位时间戳，距提交需大于2小时

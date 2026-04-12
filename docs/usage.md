@@ -137,6 +137,7 @@ autopublish upload douyin ./video.mp4 \
   --desc "这是一个上传示例" \
   --tags "自动发布,演示,工具" \
   --cover ./cover.jpg \
+  --cover43 ./portrait-cover.jpg \
   --scheduled-time 1700000000 \
   --account default
 ```
@@ -150,11 +151,11 @@ autopublish upload douyin ./video.mp4 \
 | `--title` | 全部 | 是 | 视频标题 |
 | `--desc` | 全部 | 否 | 视频简介 |
 | `--tags` | 全部 | 否 | 标签，逗号分隔 |
-| `--cover` | 全部 | 否 | 封面图片路径 |
+| `--cover` | 全部 | 否 | 封面图片路径，抖音作为横版封面 |
 | `--scheduled-time` | 全部 | 否 | 定时发布时间，10 位时间戳 |
 | `--account` | 全部 | 否 | 使用哪个登录账号，默认 `default` |
 | `--human-type2` | B 站 | 否 | 主区，例如 `1010=知识区`、`1026=健康` |
-| `--cover43` | B 站 | 否 | 4:3 封面图片路径 |
+| `--cover43` | 全部 | 否 | B 站 4:3 封面；抖音作为竖版封面 |
 | `--copyright` | B 站 | 否 | `1=自制`、`2=转载` |
 | `--source` | B 站 | 否 | 转载来源，通常在 `--copyright 2` 时填写 |
 | `--season-id` | B 站 | 否 | 合集 ID，上传成功后会尝试加入合集 |
@@ -214,11 +215,11 @@ tasks:
 | `title` | 全部 | 是 | 视频标题 |
 | `description` | 全部 | 否 | 视频简介 |
 | `tags` | 全部 | 否 | 标签数组 |
-| `cover` | 全部 | 否 | 封面图片路径 |
+| `cover` | 全部 | 否 | 封面图片路径，抖音作为横版封面 |
 | `scheduled_time` | 全部 | 否 | 定时发布时间，10 位时间戳 |
 | `account` | 全部 | 否 | 当前任务使用的账号 |
 | `human_type2` | B 站 | 否 | 主区，`1010=知识区`，`1026=健康` |
-| `cover43` | B 站 | 否 | 4:3 封面图片路径 |
+| `cover43` | 全部 | 否 | B 站 4:3 封面；抖音作为竖版封面 |
 | `copyright` | B 站 | 否 | `1=自制`、`2=转载` |
 | `source` | B 站 | 否 | 转载来源 |
 | `dynamic` | B 站 | 否 | 空间动态文案 |
