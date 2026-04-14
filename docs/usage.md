@@ -1,6 +1,6 @@
 # AutoPublish 使用手册
 
-AutoPublish 当前支持 B 站和抖音。命令入口是 `autopublish`，平台名填写 `bilibili` 或 `douyin`。
+AutoPublish 当前支持 B 站、抖音和 YouTube。命令入口是 `autopublish`，平台名填写 `bilibili`、`douyin` 或 `youtube`。
 
 ## 安装
 
@@ -28,6 +28,7 @@ python -m build
 - Python 3.10 或更高版本
 - 能正常访问目标平台网络接口
 - 抖音发布依赖浏览器自动化，需要本机 Chrome 或 Playwright Chromium
+- YouTube 发布依赖 Google Cloud OAuth Desktop client JSON，并需启用 YouTube Data API v3
 
 ## 配置
 
@@ -75,6 +76,17 @@ B 站字段：
 | `douyin.channel` | 优先使用的浏览器 channel，例如 `chrome` | `chrome` |
 | `douyin.timeout` | 页面操作超时时间，单位秒 | `120` |
 
+YouTube 字段：
+
+| 字段 | 说明 | 默认值 |
+|------|------|--------|
+| `youtube.client_secrets_file` | Google Cloud OAuth Desktop client JSON 路径 | `~/.autopublish/youtube_client_secret.json` |
+| `youtube.privacy_status` | 默认可见性，可选 `public`、`unlisted`、`private` | `public` |
+| `youtube.category_id` | 默认分类，`27=Education` | `"27"` |
+| `youtube.made_for_kids` | 默认是否面向儿童 | `false` |
+| `youtube.tags` | 默认标签列表 | `[]` |
+| `youtube.chunk_size` | YouTube 分片上传大小 | `8388608` |
+
 ## 登录和凭证
 
 B 站：
@@ -91,6 +103,13 @@ autopublish login douyin
 autopublish check douyin
 ```
 
+YouTube：
+
+```bash
+autopublish login youtube
+autopublish check youtube
+```
+
 多账号：
 
 ```bash
@@ -98,7 +117,7 @@ autopublish login douyin --account work
 autopublish check douyin --account work
 ```
 
-凭证会保存到 `credentials_dir`。默认账号文件名分别为 `bilibili_default.json`、`douyin_default.json`；指定账号会保存为 `<platform>_<account>.json`。
+凭证会保存到 `credentials_dir`。默认账号文件名分别为 `bilibili_default.json`、`douyin_default.json`、`youtube_default.json`；指定账号会保存为 `<platform>_<account>.json`。
 
 ## 单个上传
 
@@ -112,6 +131,12 @@ autopublish upload bilibili ./video.mp4 --title "标题"
 
 ```bash
 autopublish upload douyin ./video.mp4 --title "标题"
+```
+
+YouTube 最小命令：
+
+```bash
+autopublish upload youtube ./video.mp4 --title "标题"
 ```
 
 B 站完整示例：
@@ -142,11 +167,25 @@ autopublish upload douyin ./video.mp4 \
   --account default
 ```
 
+YouTube 完整示例：
+
+```bash
+autopublish upload youtube ./video.mp4 \
+  --title "AutoPublish 演示视频" \
+  --desc "这是一个上传示例" \
+  --tags "自动发布,演示,工具" \
+  --cover ./thumbnail.jpg \
+  --privacy-status public \
+  --category-id 27 \
+  --not-made-for-kids \
+  --account default
+```
+
 参数说明：
 
 | 参数 | 平台 | 必填 | 说明 |
 |------|------|------|------|
-| `platform` | 全部 | 是 | `bilibili` 或 `douyin` |
+| `platform` | 全部 | 是 | `bilibili`、`douyin` 或 `youtube` |
 | `video` | 全部 | 是 | 视频文件路径 |
 | `--title` | 全部 | 是 | 视频标题 |
 | `--desc` | 全部 | 否 | 视频简介 |
@@ -159,8 +198,13 @@ autopublish upload douyin ./video.mp4 \
 | `--copyright` | B 站 | 否 | `1=自制`、`2=转载` |
 | `--source` | B 站 | 否 | 转载来源，通常在 `--copyright 2` 时填写 |
 | `--season-id` | B 站 | 否 | 合集 ID，上传成功后会尝试加入合集 |
+| `--privacy-status` | YouTube | 否 | 可见性，可选 `public`、`unlisted`、`private` |
+| `--category-id` | YouTube | 否 | YouTube 分类 ID |
+| `--made-for-kids` | YouTube | 否 | 声明为面向儿童 |
+| `--not-made-for-kids` | YouTube | 否 | 声明为非面向儿童 |
 
 抖音定时发布时间必须大于当前时间 2 小时。
+YouTube 设置定时发布时间时会自动使用 `private + publishAt`，否则使用配置或命令指定的可见性。
 
 ## 批量上传
 
@@ -204,6 +248,18 @@ tasks:
       - 抖音
     cover: /path/to/douyin-cover.jpg
     scheduled_time: 1700000000
+
+  - platform: youtube
+    video: /path/to/youtube-video.mp4
+    title: "YouTube 视频标题"
+    description: "YouTube 视频简介"
+    tags:
+      - 自动发布
+      - YouTube
+    cover: /path/to/youtube-thumbnail.jpg
+    privacy_status: public
+    category_id: "27"
+    made_for_kids: false
 ```
 
 任务字段：
@@ -224,6 +280,9 @@ tasks:
 | `source` | B 站 | 否 | 转载来源 |
 | `dynamic` | B 站 | 否 | 空间动态文案 |
 | `season_id` | B 站 | 否 | 合集 ID |
+| `privacy_status` | YouTube | 否 | YouTube 可见性 |
+| `category_id` | YouTube | 否 | YouTube 分类 ID |
+| `made_for_kids` | YouTube | 否 | 是否面向儿童 |
 
 批量任务按顺序串行执行。单个任务失败后，后续任务仍会继续，结束时会输出成功数、失败数和总任务数。
 
@@ -263,6 +322,21 @@ autopublish login douyin
 ```
 
 多账号场景下，确认 `--account` 和登录时使用的一致。
+
+### YouTube 提示 OAuth client 文件不存在
+
+先在 Google Cloud 启用 YouTube Data API v3，创建 OAuth Desktop client，下载 JSON 后把路径写入：
+
+```yaml
+youtube:
+  client_secrets_file: ~/.autopublish/youtube_client_secret.json
+```
+
+然后执行：
+
+```bash
+autopublish login youtube
+```
 
 ### 提示“凭证无效或已过期”
 

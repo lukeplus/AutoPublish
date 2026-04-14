@@ -33,3 +33,24 @@ douyin:
 
   # 页面操作超时时间，单位秒
   timeout: 120
+
+youtube:
+  # Google Cloud 下载的 OAuth Desktop client JSON
+  client_secrets_file: ~/.autopublish/youtube_client_secret.json
+
+  # 默认公开状态，可选: public, unlisted, private
+  # 如果设置 scheduled_time，会自动改为 private + publishAt
+  privacy_status: public
+
+  # 默认分类，27 = Education
+  category_id: "27"
+
+  # 默认声明非面向儿童
+  made_for_kids: false
+
+  # 默认标签
+  tags:
+    - 自动发布
+
+  # YouTube resumable upload 分片大小，默认 8 MiB
+  chunk_size: 8388608

@@ -22,6 +22,9 @@ qrcode.png
 
 .env
 .env.*
+client_secret*.json
+youtube_client_secret*.json
+youtube_*.json
 autopublish.yaml
 autopublish.yml
 config.yaml

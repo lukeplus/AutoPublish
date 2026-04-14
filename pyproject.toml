@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "autopublish"
 version = "0.1.0"
-description = "自动发布视频到B站和抖音"
+description = "自动发布视频到B站、抖音和 YouTube"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -13,8 +13,11 @@ license-files = ["LICENSE"]
 authors = [
     { name = "AutoPublish contributors" },
 ]
-keywords = ["bilibili", "douyin", "video", "upload", "automation"]
+keywords = ["bilibili", "douyin", "youtube", "video", "upload", "automation"]
 dependencies = [
+    "google-api-python-client>=2.0",
+    "google-auth-httplib2>=0.2",
+    "google-auth-oauthlib>=1.0",
     "httpx>=0.24",
     "playwright>=1.52",
     "pyyaml>=6.0",

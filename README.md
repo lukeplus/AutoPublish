@@ -1,6 +1,6 @@
 # AutoPublish
 
-AutoPublish 是一个命令行工具，用于把本地视频发布到内容平台。当前版本支持 B 站和抖音：B 站走接口上传，抖音走创作者中心浏览器自动化。
+AutoPublish 是一个命令行工具，用于把本地视频发布到内容平台。当前版本支持 B 站、抖音和 YouTube：B 站走接口上传，抖音走创作者中心浏览器自动化，YouTube 走官方 Data API。
 
 ## 快速开始
 
@@ -27,7 +27,7 @@ python -m build
 cp config.example.yaml autopublish.yaml
 ```
 
-`autopublish.yaml` 用于配置凭证目录、B 站默认主区、默认标签、上传线路、抖音浏览器参数等。
+`autopublish.yaml` 用于配置凭证目录、B 站默认主区、上传线路、抖音浏览器参数、YouTube OAuth client 等。
 
 ### 3. 登录并检查凭证
 
@@ -39,6 +39,11 @@ autopublish check bilibili
 ```bash
 autopublish login douyin
 autopublish check douyin
+```
+
+```bash
+autopublish login youtube
+autopublish check youtube
 ```
 
 多账号使用 `--account` 区分：
@@ -69,6 +74,17 @@ autopublish upload douyin ./video.mp4 \
   --tags "标签1,标签2"
 ```
 
+YouTube：
+
+```bash
+autopublish upload youtube ./video.mp4 \
+  --title "我的视频" \
+  --desc "视频简介" \
+  --tags "标签1,标签2" \
+  --cover ./thumbnail.jpg \
+  --privacy-status public
+```
+
 定时发布：
 
 ```bash
@@ -90,9 +106,11 @@ autopublish batch ./tasks.yaml
 |------|------|
 | `autopublish login bilibili` | 登录 B 站 |
 | `autopublish login douyin` | 登录抖音 |
+| `autopublish login youtube` | 登录 YouTube |
 | `autopublish check douyin` | 检查抖音凭证是否有效 |
 | `autopublish upload bilibili ./video.mp4 --title "标题"` | 上传到 B 站 |
 | `autopublish upload douyin ./video.mp4 --title "标题"` | 上传到抖音 |
+| `autopublish upload youtube ./video.mp4 --title "标题"` | 上传到 YouTube |
 | `autopublish batch ./tasks.yaml` | 按 YAML 任务文件批量上传 |
 | `autopublish categories` | 查看可用 B 站主区 |
 
@@ -121,6 +139,7 @@ autopublish batch ./tasks.yaml
 src/autopublish/cli.py                 # 命令入口、配置读取、任务编排
 src/autopublish/platforms/bilibili.py  # B 站登录、上传、合集、主区逻辑
 src/autopublish/platforms/douyin.py    # 抖音登录、检查、上传、定时发布逻辑
+src/autopublish/platforms/youtube.py   # YouTube OAuth、上传、定时发布、封面逻辑
 ```
 
 完整参数、配置字段、批量任务格式和排错说明见 [docs/usage.md](docs/usage.md)。

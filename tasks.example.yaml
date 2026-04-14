@@ -31,3 +31,16 @@ tasks:
     cover: /path/to/douyin-cover.jpg
     cover43: /path/to/douyin-portrait-cover.jpg  # 可选，抖音竖版封面
     scheduled_time: 1700000000  # 10位时间戳，距提交需大于2小时
+
+  - platform: youtube
+    video: /path/to/youtube-video.mp4
+    title: "YouTube 视频标题"
+    description: "YouTube 视频简介"
+    tags:
+      - 自动发布
+      - YouTube
+    cover: /path/to/youtube-thumbnail.jpg  # 可选，jpg/png 且不超过 2MB
+    privacy_status: public  # 可选: public, unlisted, private
+    category_id: "27"
+    made_for_kids: false
+    scheduled_time: 1700000000  # 可选；设置后会以 private + publishAt 定时发布

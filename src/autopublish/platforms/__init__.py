@@ -17,14 +17,19 @@ class VideoInfo:
     scheduled_time: int | None = None
     dynamic: str = ""
     season_id: int | None = None
+    privacy_status: str | None = None
+    category_id: str | int | None = None
+    made_for_kids: bool | None = None
 
 
 from autopublish.platforms.bilibili import BilibiliPlatform
 from autopublish.platforms.douyin import DouyinPlatform
+from autopublish.platforms.youtube import YouTubePlatform
 
 PLATFORMS: dict[str, type] = {
     "bilibili": BilibiliPlatform,
     "douyin": DouyinPlatform,
+    "youtube": YouTubePlatform,
 }
 
 

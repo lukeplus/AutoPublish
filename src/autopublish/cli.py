@@ -27,6 +27,14 @@ DEFAULT_CONFIG = {
         "channel": "chrome",
         "timeout": 120,
     },
+    "youtube": {
+        "client_secrets_file": "~/.autopublish/youtube_client_secret.json",
+        "privacy_status": "public",
+        "category_id": "27",
+        "made_for_kids": False,
+        "tags": [],
+        "chunk_size": 8388608,
+    },
 }
 
 
@@ -63,7 +71,7 @@ def merge_config(base: dict, override: dict) -> dict:
 def main():
     parser = argparse.ArgumentParser(
         prog="autopublish",
-        description="自动发布视频到B站和抖音",
+        description="自动发布视频到B站、抖音和 YouTube",
     )
     parser.add_argument(
         "-c", "--config",
@@ -74,7 +82,7 @@ def main():
 
     # ── login ──
     login_parser = subparsers.add_parser("login", help="登录平台")
-    login_parser.add_argument("platform", help="平台名称 (bilibili/douyin)")
+    login_parser.add_argument("platform", help="平台名称 (bilibili/douyin/youtube)")
     login_parser.add_argument(
         "--account",
         default="default",
@@ -83,7 +91,7 @@ def main():
 
     # ── check ──
     check_parser = subparsers.add_parser("check", help="检查登录状态")
-    check_parser.add_argument("platform", help="平台名称 (bilibili/douyin)")
+    check_parser.add_argument("platform", help="平台名称 (bilibili/douyin/youtube)")
     check_parser.add_argument(
         "--account",
         default="default",
@@ -92,7 +100,7 @@ def main():
 
     # ── upload ──
     upload_parser = subparsers.add_parser("upload", help="上传视频")
-    upload_parser.add_argument("platform", help="平台名称 (bilibili/douyin)")
+    upload_parser.add_argument("platform", help="平台名称 (bilibili/douyin/youtube)")
     upload_parser.add_argument("video", nargs="?", help="视频文件路径")
     upload_parser.add_argument("--title", help="视频标题")
     upload_parser.add_argument("--desc", default="", help="视频简介")
@@ -103,6 +111,26 @@ def main():
     upload_parser.add_argument("--copyright", type=int, choices=[1, 2], help="1=自制 2=转载")
     upload_parser.add_argument("--source", default="", help="转载来源 (copyright=2 时填写)")
     upload_parser.add_argument("--season-id", type=int, help="合集ID")
+    upload_parser.add_argument(
+        "--privacy-status",
+        choices=["public", "unlisted", "private"],
+        help="YouTube 可见性",
+    )
+    upload_parser.add_argument("--category-id", help="YouTube 分类ID")
+    made_for_kids_group = upload_parser.add_mutually_exclusive_group()
+    made_for_kids_group.add_argument(
+        "--made-for-kids",
+        dest="made_for_kids",
+        action="store_true",
+        default=None,
+        help="YouTube 声明为面向儿童",
+    )
+    made_for_kids_group.add_argument(
+        "--not-made-for-kids",
+        dest="made_for_kids",
+        action="store_false",
+        help="YouTube 声明为非面向儿童",
+    )
     upload_parser.add_argument(
         "--scheduled-time",
         type=int,
@@ -176,7 +204,7 @@ def cmd_upload(args, config: dict):
         print("错误: 请指定视频标题 (--title)", file=sys.stderr)
         sys.exit(1)
 
-    tags = args.tags.split(",") if args.tags else []
+    tags = [tag.strip() for tag in args.tags.split(",") if tag.strip()] if args.tags else []
     video = VideoInfo(
         file_path=args.video,
         title=args.title,
@@ -189,6 +217,9 @@ def cmd_upload(args, config: dict):
         source=args.source,
         scheduled_time=args.scheduled_time,
         season_id=args.season_id,
+        privacy_status=args.privacy_status,
+        category_id=args.category_id,
+        made_for_kids=args.made_for_kids,
     )
 
     platform = get_platform(args.platform, config)
@@ -231,6 +262,9 @@ def cmd_batch(args, config: dict):
             scheduled_time=task.get("scheduled_time"),
             dynamic=task.get("dynamic", ""),
             season_id=task.get("season_id"),
+            privacy_status=task.get("privacy_status"),
+            category_id=task.get("category_id"),
+            made_for_kids=task.get("made_for_kids"),
         )
 
         account = task.get("account", args.account)
