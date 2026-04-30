@@ -760,7 +760,7 @@ class BilibiliUploader:
             "watermark": {"state": 1},
             "cover": cover_url,
             "videos": [page],
-            "is_only_self": 1,
+            "is_only_self": 0,
             "space_hidden": 2,
             **self._csrf_fields(),
         }
